@@ -32,9 +32,13 @@ SYSTEM_TEMPLATES = {
 
 # .envからAPIキーを取得する関数
 def get_api_key():
-    api_key = os.getenv("OPEN_API_KEY")
+    # Streamlit Cloudではst.secrets、ローカルでは.env
+    if os.getenv("STREAMLIT_ENVIRONMENT") == "cloud":
+        api_key = st.secrets["OPEN_API_KEY"]
+    else:
+        api_key = os.getenv("OPEN_API_KEY")
     if not api_key:
-        st.error("APIキーが設定されていません。OPEN_API_KEYを.envファイルに記載してください。")
+        st.error("APIキーが設定されていません。OPEN_API_KEYを.envまたはSecretsに記載してください。")
     return api_key
 
 # 選択された質問内容と入力文からプロンプトを生成する関数

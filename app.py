@@ -3,12 +3,13 @@
 
 import streamlit as st
 import os
-from dotenv import load_dotenv
 from langchain.chat_models import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, HumanMessagePromptTemplate
 
-# .envファイルの内容を環境変数として読み込む
-load_dotenv()
+# Cloud環境でなければ dotenv を使う
+if os.getenv("STREAMLIT_ENVIRONMENT") != "cloud":
+    from dotenv import load_dotenv
+    load_dotenv()
 
 # 質問内容ごとのシステムプロンプトテンプレート
 SYSTEM_TEMPLATES = {
@@ -30,9 +31,8 @@ SYSTEM_TEMPLATES = {
 {user_input}"""
 }
 
-# .envからAPIキーを取得する関数
+# APIキーを環境に応じて取得する関数
 def get_api_key():
-    # Streamlit Cloudではst.secrets、ローカルでは.env
     if os.getenv("STREAMLIT_ENVIRONMENT") == "cloud":
         api_key = st.secrets["OPEN_API_KEY"]
     else:
